@@ -1,0 +1,40 @@
+ARG BASE_IMAGE=registry.cn-hangzhou.aliyuncs.com/rcf/noetic:latest 
+FROM $BASE_IMAGE
+
+USER root
+
+RUN sudo apt update && \
+    sudo apt install -y unzip
+
+COPY app /app
+WORKDIR /app
+
+# 安装webots
+RUN apt update && \
+    apt install -y /app/webots_2023b_amd64.deb
+RUN rm /app/webots_2023b_amd64.deb
+
+RUN sudo apt update && sudo apt install -y sumo sumo-tools
+
+# 将所有软连接改成相对引用！ 请确保该命令一定在最后
+RUN sudo apt update && sudo apt install symlinks
+RUN sudo symlinks -rc /
+
+USER robot
+
+WORKDIR /home/robot
+ENV USER=robot
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+ENV SUMO_HOME=/usr/share/sumo/
+
+USER root
+RUN mkdir assets
+RUN mv /app/assets-R2023b.zip assets/
+RUN cd assets  && unzip assets-R2023b.zip && rm assets-R2023b.zip
+
+RUN mkdir -p /home/robot/.cache/Cyberbotics/Webots && mv assets /home/robot/.cache/Cyberbotics/Webots/assets/
+
+# WORKDIR /app
+
+RUN chown 1000:1000 /app/Webots-R2023b.conf
+RUN mv /app/Webots-R2023b.conf  /home/robot/.cache/Cyberbotics/Webots-R2023b.conf
