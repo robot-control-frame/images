@@ -1,0 +1,25 @@
+ARG BASE_IMAGE=registry.cn-hangzhou.aliyuncs.com/rcf/noetic_webots:latest 
+FROM $BASE_IMAGE
+
+USER root
+
+RUN apt-get update && sudo apt-get install -y \
+    libgl1-mesa-dev \
+    libxinerama-dev \
+    libxcursor-dev \
+    libxrandr-dev \
+    libxi-dev
+
+RUN git clone -b 3.2.7 https://github.com/google-deepmind/mujoco.git
+RUN mkdir -p mujoco/build
+RUN cmake -B mujoco/build -S mujoco \
+    -DCMAKE_BUILD_TYPE:STRING=Release \
+    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=OFF \
+    -DMUJOCO_BUILD_EXAMPLES:BOOL=OFF \
+    -DMUJOCO_HARDEN:BOOL=ON \
+    -DCMAKE_C_COMPILER:STRING=clang \
+    -DCMAKE_CXX_COMPILER:STRING=clang++
+
+RUN cmake --build mujoco/build -j 20
+RUN cmake --install mujoco/build
+RUN rm -rf mujoco
