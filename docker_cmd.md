@@ -51,3 +51,8 @@ docker compose up -d --force-recreate
 ```bash
 docker rm <CONTAINER ID>
 ```
+
+## 推送镜像
+```bash
+docker push <REPOSITORY>:<TAG>
+```
