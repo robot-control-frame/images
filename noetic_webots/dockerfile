@@ -20,7 +20,7 @@ RUN sudo apt update && sudo apt install -y sumo sumo-tools
 RUN sudo apt update && sudo apt install symlinks
 RUN sudo symlinks -rc /
 
-USER robot
+
 
 WORKDIR /home/robot
 ENV USER=robot
