@@ -1,0 +1,60 @@
+ARG BASE_IMAGE=docker.1ms.run/osrf/ros:jazzy-desktop-full
+FROM $BASE_IMAGE
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ARG USER=robot
+COPY app /app
+WORKDIR /app
+RUN ./base.bash ${USER}
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /home/${USER}/.bashrc
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> /home/${USER}/.bashrc
+RUN echo "export RCUTILS_COLORIZED_OUTPUT=1" >> /home/${USER}/.bashrc
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+# Install apt deps:
+RUN apt update && apt install -y --no-install-recommends \
+    make \
+    git \
+    git-lfs \
+    curl \
+    wget \
+    ssh \
+    vim \
+    tmux \
+    tmuxp \
+    g++ \
+    gcc \
+    clang \
+    net-tools \
+    iproute2 \
+    iputils-ping \
+    openssl \
+    python3-pip \
+    python3-setuptools \
+    build-essential \
+    devscripts \
+    bash-completion \
+    libudev-dev \
+    libssl-dev \
+    pkg-config \
+    symlinks \
+    zsh \
+    gdb \
+    lldb \
+    ros-jazzy-plotjuggler*\
+    ros-jazzy-realtime-tools\
+    ros-jazzy-rviz*\
+    ros-jazzy-rqt*\
+    ros-jazzy-rmw-cyclonedds-cpp\
+    ros-jazzy-ros2-control*\
+    liblodepng-dev \
+    libglfw3 \
+    libglfw3-dev\
+    clang-format\
+    clang-tidy\
+    clangd\
+    cmake-format
+
+USER ${USER}
+WORKDIR /home/${USER}
